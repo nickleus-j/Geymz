@@ -16,10 +16,14 @@
     }
 
     canvas {
-        background: #153A5D;
+        background: #153A5C;
         display: block;
         margin: 20px auto;
         margin-top: 20px;
+    }
+    .useArrow{
+        font-size:18px;
+        text-align:center;
     }
 </style>
 <p>
@@ -29,7 +33,7 @@
 </p>
 <p id="msg" class="text-center"> Press <em>Space</em> to start </p>
 <canvas id="snakeCanvas" width="300" height="200"></canvas>
-<div class="text-center">User Arrow keys on keyboard</div>
+<div class=" useArrow">User Arrow keys on keyboard</div>
 @section scripts{
     <script>
         var debug = {
