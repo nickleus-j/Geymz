@@ -125,6 +125,7 @@
             } else {
                 turn = turn === "X" ? "O" : "X";
                 document.getElementById('turn').textContent = 'Player ' + turn;
+                pingViaAudio(400);
             }
         }
 
