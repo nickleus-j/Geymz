@@ -1,0 +1,146 @@
+﻿@{
+    ViewBag.Title = "Snake";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<style>
+    body, html {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+    }
+
+    canvas {
+        display: block;
+        background: #f0f0f0;
+        cursor: grab;
+    }
+</style>
+<canvas id="c"></canvas>
+
+@section Scripts {
+    <script>
+        const canvas = document.getElementById('c');
+        const ctx = canvas.getContext('2d');
+
+        window.addEventListener('resize', resize);
+
+        // Polygon class
+        class Polygon {
+            constructor(points, x, y, rotation = 0, color = 'lightblue') {
+                this.points = points;    // Array of [{x,y},...]
+                this.x = x;              // center x
+                this.y = y;              // center y
+                this.rotation = rotation;// in radians
+                this.color = color;
+            }
+            // draw on ctx
+            draw(ctx) {
+                ctx.save();
+                ctx.translate(this.x, this.y);
+                ctx.rotate(this.rotation);
+                ctx.beginPath();
+                ctx.moveTo(this.points[0].x, this.points[0].y);
+                for (let i = 1; i < this.points.length; i++) {
+                    ctx.lineTo(this.points[i].x, this.points[i].y);
+                }
+                ctx.closePath();
+                ctx.fillStyle = this.color;
+                ctx.fill();
+                ctx.strokeStyle = '#333';
+                ctx.stroke();
+                ctx.restore();
+            }
+            // point-in-polygon test (ray-casting), in world coords
+            contains(px, py) {
+                // convert to local coords
+                const cos = Math.cos(-this.rotation), sin = Math.sin(-this.rotation);
+                const lx = cos * (px - this.x) - sin * (py - this.y);
+                const ly = sin * (px - this.x) + cos * (py - this.y);
+                let inside = false;
+                for (let i = 0, j = this.points.length - 1; i < this.points.length; j = i++) {
+                    const xi = this.points[i].x, yi = this.points[i].y;
+                    const xj = this.points[j].x, yj = this.points[j].y;
+                    const intersect = ((yi > ly) !== (yj > ly))
+                        && (lx < (xj - xi) * (ly - yi) / (yj - yi) + xi);
+                    if (intersect) inside = !inside;
+                }
+                return inside;
+            }
+        }
+
+        // set up some demo polygons
+        const shapes = [
+            new Polygon([{ x: -50, y: -50 }, { x: 50, y: -50 }, { x: 50, y: 50 }, { x: -50, y: 50 }], 200, 200, 0, '#f94144'),
+            new Polygon([{ x: 0, y: -60 }, { x: 60, y: 60 }, { x: -60, y: 60 }], 400, 300, 0, '#43aa8b'),
+        ];
+
+        let mode = null;    // 'drag' or 'rotate'
+        let active = null;  // the polygon being acted on
+        let start = {};     // start mouse or shape state
+
+        canvas.addEventListener('mousedown', e => {
+            const rect = canvas.getBoundingClientRect();
+            const mx = e.clientX - rect.left, my = e.clientY - rect.top;
+            // pick topmost shape under mouse
+            for (let i = shapes.length - 1; i >= 0; i--) {
+                if (shapes[i].contains(mx, my)) {
+                    active = shapes[i];
+                    // bring to front
+                    shapes.push(shapes.splice(i, 1)[0]);
+                    if (e.button === 0) { // left = drag
+                        mode = 'drag';
+                        start.mx = mx;
+                        start.my = my;
+                        start.x = active.x;
+                        start.y = active.y;
+                        canvas.style.cursor = 'grabbing';
+                    } else if (e.button === 2) { // right = rotate
+                        mode = 'rotate';
+                        // angle from center to pointer
+                        start.angle0 = Math.atan2(my - active.y, mx - active.x);
+                        start.rot0 = active.rotation;
+                        canvas.style.cursor = 'alias';
+                    }
+                    break;
+                }
+            }
+        });
+
+        canvas.addEventListener('mousemove', e => {
+            if (!active || !mode) return;
+            const rect = canvas.getBoundingClientRect();
+            const mx = e.clientX - rect.left, my = e.clientY - rect.top;
+            if (mode === 'drag') {
+                active.x = start.x + (mx - start.mx);
+                active.y = start.y + (my - start.my);
+            } else if (mode === 'rotate') {
+                const angle1 = Math.atan2(my - active.y, mx - active.x);
+                active.rotation = start.rot0 + (angle1 - start.angle0);
+            }
+            draw();
+        });
+
+        window.addEventListener('mouseup', () => {
+            mode = null;
+            active = null;
+            canvas.style.cursor = 'grab';
+        });
+
+        // disable context menu on right-click
+        canvas.addEventListener('contextmenu', e => e.preventDefault());
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            shapes.forEach(s => s.draw(ctx));
+        }
+
+        function resize() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            draw();
+        }
+        window.addEventListener('load', function (event) {
+            resize();
+        });
+    </script>
+}
