@@ -304,6 +304,7 @@
                     incr: function (n) {
                         score += n;
                         actualScore.innerText = '' + score;
+                        pingViaAudio(200);
                     },
                     stop: function () {
                         if (score > best) {
