@@ -3,7 +3,7 @@
 
 // Write your JavaScript code.
 var audioContext = new (window.AudioContext || window.webkitAudioContext)();
-function pingViaAudio(freq) {
+function PingPage(freq, initTime, decay) {
     var oscillator = audioContext.createOscillator();
     var gainNode = audioContext.createGain();
 
@@ -14,9 +14,12 @@ function pingViaAudio(freq) {
     oscillator.frequency.setValueAtTime(freq, audioContext.currentTime); // Frequency in Hz
 
     // Create a quick decay for a "ping" effect
-    gainNode.gain.setValueAtTime(0.5, audioContext.currentTime); // Initial volume
-    gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.3); // Decay over 0.3 seconds
+    gainNode.gain.setValueAtTime(initTime, audioContext.currentTime); // Initial volume
+    gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + decay);
 
     oscillator.start(audioContext.currentTime);
-    oscillator.stop(audioContext.currentTime + 0.3); // Stop after the decay
+    oscillator.stop(audioContext.currentTime + decay); // Stop after the decay
+}
+function pingViaAudio(freq) {
+    PingPage(freq, 0.5, 0.3);
 }

@@ -35,7 +35,7 @@
         outline: none;
     }
 
-    #modelEl {
+    #modelBubble {
         position: fixed;
         top: 0;
         left: 0;
@@ -50,7 +50,7 @@
         z-index: 999;
     }
 
-        #modelEl > div {
+        #modelBubble > div {
             width: 100%;
             max-width: 350px;
             padding: 1.5em;
@@ -58,16 +58,16 @@
             border-radius:1.1em;
         }
 
-        #modelEl h1 {
+        #modelBubble h1 {
             font-size: 3em;
             font-weight: 600;
         }
 
-        #modelEl p {
+        #modelBubble p {
             font-size: 14px;
         }
 
-        #modelEl button {
+        #modelBubble button {
             width: 100%;
             margin-top: 1.5em;
             border: none;
@@ -79,7 +79,7 @@
             transition: all 0.3s ease;
         }
 
-            #modelEl button:hover {
+            #modelBubble button:hover {
                 opacity: 0.8;
             }
 
@@ -92,20 +92,21 @@
 <div id="score">
     <p>
         Score:
-        <span class="ml-1" id="scoreEl">0</span>
+        <span class="ml-1" id="scoreLbl">0</span>
     </p>
 
     <p>
-        Highest:
+        Top Score:
         <span class="ml-1" id="highestEl">0</span>
     </p>
 </div>
 
-<div id="modelEl">
+<div id="modelBubble">
     <div>
-        <h1 id="bigScoreEl">0</h1>
+        <h1 id="bigscoreLbl">0</h1>
         <p>Points</p>
         <div>
+            <span>Click Colorful Circles</span>
             <button id="startGameBtn">Start Game</button>
         </div>
     </div>
@@ -127,11 +128,11 @@
 
         // Variables & Constants
         const c = canvas.getContext('2d')
-        const scoreEl = document.getElementById('scoreEl')
+        const scoreLbl = document.getElementById('scoreLbl')
         const highestEl = document.getElementById('highestEl')
         const startGameBtn = document.getElementById('startGameBtn')
-        const modelEl = document.getElementById('modelEl')
-        const bigScoreEl = document.getElementById('bigScoreEl')
+        const modelBubble = document.getElementById('modelBubble')
+        const bigscoreLbl = document.getElementById('bigscoreLbl')
         const friction = 0.98
         let x = canvas.width / 2
         let y = canvas.height / 2
@@ -206,7 +207,7 @@
         function updateScore(times = 1) {
             spawnTime *= 0.9995
             score += 100 * times
-            scoreEl.innerHTML = score
+            scoreLbl.innerHTML = score
         }
 
         // Calculate Velocity from center(x, y) to (x1,y1)
@@ -319,7 +320,8 @@
             v.x *= 5.5
             v.y *= 5.5
 
-            projectiles.push(new Shooter(x, y, 5, 'white', v))
+            projectiles.push(new Shooter(x, y, 5, 'white', v));
+            PingPage(300, 1, 0.5);
         }
 
         // Reinitializing Variables for Starting a New Game
@@ -331,7 +333,7 @@
             score = 0
             spawnTime = 1000
             highestEl.innerHTML = score
-            scoreEl.innerHTML = score
+            scoreLbl.innerHTML = score
             highestEl.innerHTML = highest
         }
 
@@ -340,12 +342,12 @@
             clearInterval(spanEnemiesInterval)
             cancelAnimationFrame(animationId) // Exit Animation
             canvas.removeEventListener('click', shootEnemy) // Stop Shooting
-            modelEl.style.display = 'flex' // Dialogue box
+            modelBubble.style.display = 'flex' // Dialogue box
             if (score > highest) {
                 highest = score
                 localStorage.setItem('highest', highest)
             }
-            bigScoreEl.innerHTML = score // Poping score
+            bigscoreLbl.innerHTML = score // Poping score
         }
 
         // Spawning Random Enemies
@@ -376,7 +378,7 @@
             animate()
             clearInterval(spanEnemiesInterval)
             spanEnemies()
-            modelEl.style.display = 'none'
+            modelBubble.style.display = 'none'
         }
 
         // Start Game Button
