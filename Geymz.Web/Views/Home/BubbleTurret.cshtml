@@ -71,11 +71,11 @@
             width: 100%;
             margin-top: 1.5em;
             border: none;
-            color: white;
+            color: ghostwhite;
             cursor: pointer;
             border-radius: 1.3em;
             padding: 1em 2em;
-            background: darkseagreen;
+            background: darkgreen;
             transition: all 0.3s ease;
         }
 
@@ -142,7 +142,7 @@
         let score = 0
         let highest = localStorage.getItem('highest') || 0
         let animationId
-        let spanEnemiesInterval
+        let spawnEnemiesInterval
         let spawnTime = 1000
         highestEl.innerHTML = highest
 
@@ -339,7 +339,7 @@
 
         // Stop Game
         function stopGame() {
-            clearInterval(spanEnemiesInterval)
+            clearInterval(spawnEnemiesInterval)
             cancelAnimationFrame(animationId) // Exit Animation
             canvas.removeEventListener('click', shootEnemy) // Stop Shooting
             modelBubble.style.display = 'flex' // Dialogue box
@@ -351,9 +351,9 @@
         }
 
         // Spawning Random Enemies
-        function spanEnemies() {
+        function spawnEnemies() {
             // Spawn a enemy every second
-            spanEnemiesInterval = setTimeout(() => {
+            spawnEnemiesInterval = setTimeout(() => {
                 let x, y
                 const radius = Math.random() * 16 + 14
                 if (Math.random() < 0.5) {
@@ -365,7 +365,7 @@
                 }
                 const color = `hsl(${Math.floor(Math.random() * 360)}, 50%, 50%)`
                 enemies.push(new Shooter(x, y, radius, color, calculateVelocity(x, y)))
-                spanEnemies()
+                spawnEnemies()
             }, spawnTime)
         }
 
@@ -376,8 +376,8 @@
             canvas.addEventListener('click', shootEnemy)
             init()
             animate()
-            clearInterval(spanEnemiesInterval)
-            spanEnemies()
+            clearInterval(spawnEnemiesInterval)
+            spawnEnemies()
             modelBubble.style.display = 'none'
         }
 
