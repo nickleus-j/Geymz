@@ -697,7 +697,7 @@
                 var yoffset = level.tileheight / 2;
 
                 // Draw level background
-                context.fillStyle = "#8c8c8c";
+                context.fillStyle = "#5c8c8c";
                 context.fillRect(level.x - 4, level.y - 4, level.width + 8, level.height + 4 - yoffset);
 
                 // Render tiles
@@ -736,7 +736,7 @@
                     context.fillRect(level.x - 4, level.y - 4, level.width + 8, level.height + 2 * level.tileheight + 8 - yoffset);
 
                     context.fillStyle = "#ffffff";
-                    context.font = "24px Verdana";
+                    context.font = "24px Century";
                     drawCenterText("Game Over!", level.x, level.y + level.height / 2 + 10, level.width);
                     drawCenterText("Click to start", level.x, level.y + level.height / 2 + 40, level.width);
                 }
@@ -754,7 +754,7 @@
 
                 // Draw title
                 context.fillStyle = "#ffffff";
-                context.font = "24px consolas";
+                context.font = "24px Century";
                 context.fillText("Bubble Shooter", 10, 37);
 
             }
