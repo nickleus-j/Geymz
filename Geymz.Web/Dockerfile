@@ -1,22 +1,17 @@
-#See https://aka.ms/containerfastmode to understand how Visual Studio uses this Dockerfile to build your images for faster debugging.
+FROM mcr.microsoft.com/dotnet/sdk:8.0@sha256:35792ea4ad1db051981f62b313f1be3b46b1f45cadbaa3c288cd0d3056eefb83 AS build
+WORKDIR /App
+EXPOSE 8080
+EXPOSE 8081
 
-FROM mcr.microsoft.com/dotnet/aspnet:8.0-alpine AS base
-WORKDIR /app
-EXPOSE 80
-EXPOSE 443
+# Copy everything
+COPY . ./
+# Restore as distinct layers
+RUN dotnet restore
+# Build and publish a release
+RUN dotnet publish -o out
 
-FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
-WORKDIR /src
-COPY ["Geymz.Web/Geymz.Web.csproj", "Geymz.Web/"]
-RUN dotnet restore "Geymz.Web/Geymz.Web.csproj"
-COPY . .
-WORKDIR "/src/Geymz.Web"
-RUN dotnet build "Geymz.Web.csproj" -c Release -o /app/build
-
-FROM build AS publish
-RUN dotnet publish "Geymz.Web.csproj" -c Release -o /app/publish
-
-FROM base AS final
-WORKDIR /app
-COPY --from=publish /app/publish .
+# Build runtime image
+FROM mcr.microsoft.com/dotnet/aspnet:8.0-alpine
+WORKDIR /App
+COPY --from=build /App/out .
 ENTRYPOINT ["dotnet", "Geymz.Web.dll"]
