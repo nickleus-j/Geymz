@@ -5,8 +5,6 @@
 }
 
 <style>
-    
-
     h1 {
         font-size: 56px;
     }
@@ -33,15 +31,15 @@
 </p>
 <p id="msg" class="text-center"> Press <em>Space</em> to start </p>
 <canvas id="snakeCanvas" width="300" height="200"></canvas>
-<div class=" useArrow">User Arrow keys on keyboard</div>
+<div class=" useArrow">Use Arrow keys on keyboard</div>
 @section scripts{
     <script>
-        var debug = {
+        var board = {
             x: [],
             y: [],
             food: []
         };
-        (function (debug) {
+        (function (board) {
             var canvas = document.getElementById("snakeCanvas");
             var msg = document.getElementById('msg');
             var actualScore = document.getElementById('actual-score');
@@ -56,7 +54,7 @@
             var anim;
 
             document.addEventListener('endGame', function endGameHandler(e) {
-                msg.innerHTML = 'Game Over! Press <em>Space</em> to start a new game'
+                msg.innerHTML = 'Game Over! Press <em>Space</em> to start a new game.'
                 gameOn = 0;
                 window.cancelAnimationFrame(anim);
                 clearInterval(interval);
@@ -150,9 +148,9 @@
                         anim = window.requestAnimationFrame(play);
                     }
 
-                    debug.x = snake.x;
-                    debug.y = snake.y;
-                    debug.food = [food.x, food.y];
+                    board.x = snake.x;
+                    board.y = snake.y;
+                    board.food = [food.x, food.y];
                 }
 
                 interval = setInterval(function () {
@@ -315,6 +313,6 @@
                 }
             }
 
-        })(debug)
+        })(board)
     </script>
 }
