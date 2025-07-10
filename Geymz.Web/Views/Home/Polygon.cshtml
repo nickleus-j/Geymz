@@ -1,0 +1,67 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+<form id="polygonForm">
+    <label for="sides">Number of Sides:</label>
+    <input type="number" id="sides" value="5" min="3"><br><br>
+    <label for="radius">Radius:</label>
+    <input type="number" id="radius" value="50" min="10"><br><br>
+    <label for="fillColor">Fill Color:</label>
+    <input type="color" id="fillColor" value="#ADD8E6"><br><br>
+    <button type="submit">Draw Polygon</button>
+</form>
+<canvas id="myCanvas" width="400" height="400" style="border:1px solid #000;"></canvas>
+@section Scripts {
+    <script>
+        const canvas = document.getElementById('myCanvas');
+        const ctx = canvas.getContext('2d');
+        const numSides = 5; // For a pentagon
+        const radius = 50;
+        const centerX = canvas.width / 2;
+        const centerY = canvas.height / 2;
+        const points = [];
+        for (let i = 0; i < numSides; i++) {
+            const angle = (Math.PI * 2 * i / numSides) - (Math.PI / 2); // Start at the top
+            const x = centerX + radius * Math.cos(angle);
+            const y = centerY + radius * Math.sin(angle);
+            points.push({ x, y });
+        }
+        ctx.beginPath();
+        ctx.moveTo(points[0].x, points[0].y);
+        for (let i = 1; i < points.length; i++) {
+            ctx.lineTo(points[i].x, points[i].y);
+        }
+        ctx.closePath();
+        ctx.stroke(); // Draw the outline
+        ctx.fill();   // Fill the polygon
+        document.getElementById('polygonForm').addEventListener('submit', function (event) {
+            event.preventDefault(); // Prevent default form submission
+
+            const numSides = parseInt(document.getElementById('sides').value);
+            const radius = parseInt(document.getElementById('radius').value);
+            const fillColor = document.getElementById('fillColor').value;
+
+            // Clear previous drawing
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Recalculate and draw with new parameters
+            const points = [];
+            for (let i = 0; i < numSides; i++) {
+                const angle = (Math.PI * 2 * i / numSides) - (Math.PI / 2);
+                const x = centerX + radius * Math.cos(angle);
+                const y = centerY + radius * Math.sin(angle);
+                points.push({ x, y });
+            }
+
+            ctx.beginPath();
+            ctx.moveTo(points[0].x, points[0].y);
+            for (let i = 1; i < points.length; i++) {
+                ctx.lineTo(points[i].x, points[i].y);
+            }
+            ctx.closePath();
+            ctx.fillStyle = fillColor;
+            ctx.fill();
+            ctx.stroke();
+        });
+    </script>
+}
