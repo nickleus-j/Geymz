@@ -1,16 +1,57 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-<form id="polygonForm">
-    <label for="sides">Number of Sides:</label>
-    <input type="number" id="sides" value="5" min="3"><br><br>
-    <label for="radius">Radius:</label>
-    <input type="number" id="radius" value="50" min="10"><br><br>
-    <label for="fillColor">Fill Color:</label>
-    <input type="color" id="fillColor" value="#ADD8E6"><br><br>
-    <button type="submit">Draw Polygon</button>
-</form>
-<canvas id="myCanvas" width="400" height="400" style="border:1px solid #000;"></canvas>
+﻿<style>
+    #polygonForm table button {
+        margin-top: 1.5em;
+        border: none;
+        color: ghostwhite;
+        cursor: pointer;
+        border-radius: 1.3em;
+        padding: 1em 2em;
+        background: darkgreen;
+        transition: all 0.3s ease;
+    }
+
+    #polygonForm button:focus {
+        outline: none;
+    }
+
+    #polygonForm button:hover {
+        opacity: 0.8;
+        background: darkseagreen;
+    }
+</style>
+<div>
+    <form id="polygonForm">
+        <table align="center">
+            <caption>Polygon generator</caption>
+            <tr>
+                <td>
+                    <label for="sides">Number of Sides:</label>
+                    <input type="number" id="sides" value="5" min="3">
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label for="radius">Radius:</label>
+                    <input type="number" id="radius" value="50" min="10">
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label for="fillColor">Fill Color:</label>
+                    <input type="color" id="fillColor" value="#ADD8E6">
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <button type="submit">Draw Polygon</button>
+                </td>
+            </tr>
+
+        </table>
+    </form>
+    <canvas id="myCanvas" width="400" height="400" style="border:1px dashed #111;margin: 0% 25%;"></canvas>
+</div>
+
 @section Scripts {
     <script>
         const canvas = document.getElementById('myCanvas');
