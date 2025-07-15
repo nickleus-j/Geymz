@@ -10,7 +10,7 @@
     <input type="color" id="fillColor" value="#ADD8E6"><br><br>
     <button type="submit">Draw Polygon</button>
 </form>
-<canvas id="myCanvas" width="400" height="400" style="border:1px solid #000;"></canvas>
+<canvas id="myCanvas" width="400" height="400" style="border:1px solid #112;"></canvas>
 @section Scripts {
     <script>
         const canvas = document.getElementById('myCanvas');
@@ -33,6 +33,7 @@
         }
         ctx.closePath();
         ctx.stroke(); // Draw the outline
+        ctx.fillStyle = document.getElementById('fillColor').value;
         ctx.fill();   // Fill the polygon
         document.getElementById('polygonForm').addEventListener('submit', function (event) {
             event.preventDefault(); // Prevent default form submission
