@@ -45,6 +45,10 @@ namespace Geymz.Web.Controllers
         {
             return View();
         }
+        public IActionResult Whack()
+        {
+            return View();
+        }
         public IActionResult BubbleShooter()
         {
             return View();
