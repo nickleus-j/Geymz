@@ -4,7 +4,7 @@
         border: none;
         color: ghostwhite;
         cursor: pointer;
-        border-radius: 1.3em;
+        border-diameter: 1.3em;
         padding: 1em 2em;
         background: darkgreen;
         transition: all 0.3s ease;
@@ -31,8 +31,8 @@
             </tr>
             <tr>
                 <td>
-                    <label for="radius">Radius:</label>
-                    <input type="number" id="radius" value="50" min="10">
+                    <label for="diameter">Diameter:</label>
+                    <input type="number" id="diameter" value="50" min="10">
                 </td>
             </tr>
             <tr>
@@ -57,10 +57,11 @@
         const canvas = document.getElementById('myCanvas');
         const ctx = canvas.getContext('2d');
         const numSides = 5; // For a pentagon
-        const radius = 50;
+        const diameter = 50;
         const centerX = canvas.width / 2;
         const centerY = canvas.height / 2;
         const points = [];
+        let radius=diameter/2;
         for (let i = 0; i < numSides; i++) {
             const angle = (Math.PI * 2 * i / numSides) - (Math.PI / 2); // Start at the top
             const x = centerX + radius * Math.cos(angle);
@@ -76,11 +77,12 @@
         ctx.stroke(); // Draw the outline
         ctx.fillStyle = document.getElementById('fillColor').value;
         ctx.fill();   // Fill the polygon
-        document.getElementById('polygonForm').addEventListener('submit', function (event) {
-            event.preventDefault(); // Prevent default form submission
-
+        // Animate rotation
+        let angle = 0;
+        function drawPolygon(){
             const numSides = parseInt(document.getElementById('sides').value);
-            const radius = parseInt(document.getElementById('radius').value);
+            const diameter = parseInt(document.getElementById('diameter').value);
+            let radius=diameter/2;
             const fillColor = document.getElementById('fillColor').value;
 
             // Clear previous drawing
@@ -104,6 +106,19 @@
             ctx.fillStyle = fillColor;
             ctx.fill();
             ctx.stroke();
+        }
+                
+        function animate() {
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+          drawPolygon();
+          angle += 0.01;
+          requestAnimationFrame(animate);
+        }
+        
+        document.getElementById('polygonForm').addEventListener('submit', function (event) {
+            event.preventDefault(); // Prevent default form submission
+            animate();
         });
+        animate();
     </script>
 }
