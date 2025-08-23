@@ -1,7 +1,11 @@
 ﻿@{
     ViewData["Title"] = "Select a game";
 }
-
+<style>
+    p.resultedCode {
+        background: #a1aeaa;
+    }
+    </style>
 <div class="text-center">
     <h1 class="display-4">Welcome</h1>
     <p>Play @Html.ActionLink("Snake","Snake").</p>
@@ -14,3 +18,39 @@
     <p>Play @Html.ActionLink("Dice Roll", "DiceRoll").</p>
     <p>Play @Html.ActionLink("Whack", "Whack").</p>
 </div>
+<div class="morse-section row">
+    <div class="col-sm-6">
+        <h2>Enter Text for morse code</h2>
+        <input name="textToCode" type="text" class="TextField" />
+        <a class="btn btn-info" onclick="generateMorseCode()">Generate Morse Code</a>
+        <fieldset>
+            <legend>Result</legend>
+            <p class="resultedCode"></p>
+        </fieldset>
+        
+    </div>
+    
+</div>
+@section Scripts{
+	<script>
+                const morseCodeMap = {
+          'A': '.-', 'B': '-...', 'C': '-.-.', 'D': '-..', 'E': '.', 'F': '..-.',
+          'G': '--.', 'H': '....', 'I': '..', 'J': '.---', 'K': '-.-', 'L': '.-..',
+          'M': '--', 'N': '-.', 'O': '---', 'P': '.--.', 'Q': '--.-', 'R': '.-.',
+          'S': '...', 'T': '-', 'U': '..-', 'V': '...-', 'W': '.--', 'X': '-..-',
+          'Y': '-.--', 'Z': '--..', '0': '-----', '1': '.----', '2': '..---',
+          '3': '...--', '4': '....-', '5': '.....', '6': '-....', '7': '--...',
+          '8': '---..', '9': '----.', ' ': '/'
+        };
+
+        function convertToMorse(str) {
+          return str.toUpperCase().split('').map(char => morseCodeMap[char] || char).join(' ');
+        }
+        function generateMorseCode(){
+            let textToMap=document.querySelector("input.TextField").value;
+            if(textToMap){
+                document.querySelector("p.resultedCode").textContent=convertToMorse(textToMap.toUpperCase());
+            }
+        }
+       </script>
+}
