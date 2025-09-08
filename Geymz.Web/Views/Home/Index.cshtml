@@ -42,6 +42,7 @@
           '3': '...--', '4': '....-', '5': '.....', '6': '-....', '7': '--...',
           '8': '---..', '9': '----.', ' ': '/'
         };
+         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         document.getElementById("toMorseBox").addEventListener("keyup", function(event) {
             event.preventDefault();
             if (event.keyCode === 13) {
@@ -54,7 +55,44 @@
         function generateMorseCode(){
             let textToMap=document.querySelector("input.TextField").value;
             if(textToMap){
-                document.querySelector("p.resultedCode").textContent=convertToMorse(textToMap.toUpperCase());
+                let resultElem=document.querySelector("p.resultedCode");
+                resultElem.textContent=convertToMorse(textToMap);
+                playMorseCode(resultElem.textContent);
+            }
+        }
+        function playSound(duration, frequency = 600) {
+            const oscillator = audioCtx.createOscillator();
+            const gainNode = audioCtx.createGain();
+
+            oscillator.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+
+            oscillator.frequency.value = frequency; // Set frequency (e.g., 600Hz)
+            gainNode.gain.value = 1; // Start at full volume
+
+            oscillator.start(audioCtx.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.00001, audioCtx.currentTime + duration); // Fade out
+            oscillator.stop(audioCtx.currentTime + duration + 0.1); // Stop after fade
+        }
+        async function playMorseCode(morseString) {
+            const dotDuration = 0.1; // seconds
+            const dashDuration = dotDuration * 3;
+            const elementPause = dotDuration;
+            const charPause = dotDuration * 3;
+            const wordPause = dotDuration * 7;
+
+            for (const char of morseString) {
+                if (char === '.') {
+                    playSound(dotDuration);
+                    await new Promise(resolve => setTimeout(resolve, elementPause * 1000));
+                } else if (char === '-') {
+                    playSound(dashDuration);
+                    await new Promise(resolve => setTimeout(resolve, elementPause * 1000));
+                } else if (char === ' ') { // Space between characters
+                    await new Promise(resolve => setTimeout(resolve, charPause * 1000));
+                } else if (char === '/') { // Convention for word separation
+                    await new Promise(resolve => setTimeout(resolve, wordPause * 1000));
+                }
             }
         }
        </script>
