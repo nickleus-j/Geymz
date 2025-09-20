@@ -4,6 +4,8 @@
 <style>
     p.resultedCode {
         background: #a1aeaa;
+        padding: .3rem;
+        box-shadow: #333 8px 5px;
     }
     </style>
 <div class="text-center">
@@ -27,7 +29,6 @@
             <legend>Result</legend>
             <p class="resultedCode"></p>
         </fieldset>
-        
     </div>
     
 </div>
@@ -84,12 +85,12 @@
             for (const char of morseString) {
                 if (char === '.') {
                     playSound(dotDuration);
-                    await new Promise(resolve => setTimeout(resolve, elementPause * 1000));
+                    await new Promise(resolve => setTimeout(resolve, elementPause * 700));
                 } else if (char === '-') {
                     playSound(dashDuration);
                     await new Promise(resolve => setTimeout(resolve, elementPause * 1000));
                 } else if (char === ' ') { // Space between characters
-                    await new Promise(resolve => setTimeout(resolve, charPause * 1000));
+                    await new Promise(resolve => setTimeout(resolve, charPause * 500));
                 } else if (char === '/') { // Convention for word separation
                     await new Promise(resolve => setTimeout(resolve, wordPause * 1000));
                 }
