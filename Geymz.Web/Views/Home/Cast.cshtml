@@ -1,0 +1,136 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+<style>
+    canvas {
+        background: #808681;
+        display: block;
+        margin: 20px auto;
+    }
+
+    audio {
+        display: block;
+        margin: 0 auto;
+        width: 400px;
+    }
+
+    #playlist{
+        list-style:none;
+    }
+    #playlist li{
+        color: darkolivegreen;
+    }
+
+        #playlist li:hover {
+            color: teal;
+        }
+</style>
+<canvas id="ballCanvas" width="500" height="400"></canvas>
+<audio id="audioTrack" controls>
+    <source src="https://archive.org/download/my-chemical-romance-the-black-parade_202409/05%20Welcome%20to%20the%20Black%20Parade.mp3" type="audio/mpeg">
+    Your browser does not support the audio element.
+</audio>
+<h5>geek-friday-podcast</h5>
+<h6 id="current"></h6>
+<ul id="playlist">
+    @* <li data-src="audio/song1.mp3">Song One</li> *@
+    
+</ul>
+<script>
+    const canvas = document.getElementById('ballCanvas');
+    const ctx = canvas.getContext('2d');
+    const audioPlayer = document.getElementById('audioTrack');
+    const playlist = document.getElementById('playlist');
+    let currentSongIndex = 0;
+    let ball = {
+      x: 200,
+      y: 200,
+      radius: 50,
+      dx: 3,
+      dy: 2,
+      color: getRandomColor()
+    };
+
+    function getRandomColor() {
+      return 'rgb(' +
+        Math.floor(Math.random() * 256) + ',' +
+        Math.floor(Math.random() * 256) + ',' +
+        Math.floor(Math.random() * 256) + ')';
+    }
+
+    function drawBall() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.beginPath();
+      ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
+      ctx.fillStyle = ball.color;
+      ctx.fill();
+      ctx.closePath();
+    }
+
+    function updateBall() {
+      ball.x += ball.dx;
+      ball.y += ball.dy;
+
+      // Bounce off walls
+      if (ball.x + ball.radius > canvas.width || ball.x - ball.radius < 0) {
+        ball.dx *= -1;
+        ball.color = getRandomColor();
+      }
+      if (ball.y + ball.radius > canvas.height || ball.y - ball.radius < 0) {
+        ball.dy *= -1;
+        ball.color = getRandomColor();
+      }
+    }
+
+    function animate() {
+      if (!audioPlayer.paused && !audioPlayer.ended) {
+        updateBall();
+        drawBall();
+      }
+      requestAnimationFrame(animate);
+    }
+    function populatePlaylist(){
+        for(let i=1;i<=90;i++){
+            let item=document.createElement("li");
+            let paddedIndex=String(i).padStart(3, '0');
+            let srcString=`https://archive.org/download/geek-friday-podcast/geekfriday-${paddedIndex}.mp3`
+            item.setAttribute("data-src",srcString);
+            item.textContent=`Play episode ${paddedIndex}`;
+            playlist.appendChild(item);
+        }
+    }
+    animate(); // Start animation loop
+    populatePlaylist();
+    let songs = playlist.querySelectorAll('li');
+    if (songs.length > 0) {
+        audioPlayer.src = songs[currentSongIndex].dataset.src;
+    }
+    playlist.addEventListener('click', (event) => {
+        const clickedSong = event.target.closest('li'); // Find the closest list item
+        let currentLbl=document.getElementById("current");
+        if (clickedSong) {
+            currentSongIndex = Array.from(songs).indexOf(clickedSong); // Update index
+            audioPlayer.src = clickedSong.dataset.src;
+            audioPlayer.play();
+            currentLbl.textContent="Playing "+String(currentSongIndex).padStart(3, '0');
+        }
+    });
+
+    audioPlayer.addEventListener('ended', () => {
+        currentSongIndex++;
+        let currentLbl=document.getElementById("current");
+        if (currentSongIndex < songs.length) {
+            audioPlayer.src = songs[currentSongIndex].dataset.src;
+            audioPlayer.play();
+            currentLbl.textContent="Playing "+String(currentSongIndex).padStart(3, '0');
+        } else {
+            // Optionally loop the playlist or stop
+            currentSongIndex = 0; // Loop to the beginning
+            audioPlayer.src = songs[currentSongIndex].dataset.src;
+            audioPlayer.play();
+            currentLbl.textContent="Playing "+String(currentSongIndex).padStart(3, '0');
+        }
+    });
+    </script>
