@@ -1,7 +1,5 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@{
+﻿@{
+    ViewData["Title"] = "Archive: geek-friday-podcast";
 }
 <style>
     canvas {
@@ -35,9 +33,9 @@
 <h5>geek-friday-podcast</h5>
 <h6 id="current"></h6>
 <ul id="playlist">
-    @* <li data-src="audio/song1.mp3">Song One</li> *@
     
 </ul>
+@section Scripts{
 <script>
     const canvas = document.getElementById('ballCanvas');
     const ctx = canvas.getContext('2d');
@@ -101,36 +99,40 @@
             playlist.appendChild(item);
         }
     }
-    animate(); // Start animation loop
-    populatePlaylist();
-    let songs = playlist.querySelectorAll('li');
-    if (songs.length > 0) {
-        audioPlayer.src = songs[currentSongIndex].dataset.src;
-    }
-    playlist.addEventListener('click', (event) => {
-        const clickedSong = event.target.closest('li'); // Find the closest list item
-        let currentLbl=document.getElementById("current");
-        if (clickedSong) {
-            currentSongIndex = Array.from(songs).indexOf(clickedSong); // Update index
-            audioPlayer.src = clickedSong.dataset.src;
-            audioPlayer.play();
-            currentLbl.textContent="Playing "+String(currentSongIndex).padStart(3, '0');
+    
+    window.onload = function() {
+        animate(); // Start animation loop
+        populatePlaylist();
+        let songs = playlist.querySelectorAll('li');
+        if (songs.length > 0) {
+            audioPlayer.src = songs[currentSongIndex].dataset.src;
         }
-    });
+        playlist.addEventListener('click', (event) => {
+            const clickedSong = event.target.closest('li'); // Find the closest list item
+            let currentLbl=document.getElementById("current");
+            if (clickedSong) {
+                currentSongIndex = Array.from(songs).indexOf(clickedSong); // Update index
+                audioPlayer.src = clickedSong.dataset.src;
+                audioPlayer.play();
+                currentLbl.textContent="Playing "+String(currentSongIndex).padStart(3, '0');
+            }
+        });
 
-    audioPlayer.addEventListener('ended', () => {
-        currentSongIndex++;
-        let currentLbl=document.getElementById("current");
-        if (currentSongIndex < songs.length) {
-            audioPlayer.src = songs[currentSongIndex].dataset.src;
-            audioPlayer.play();
-            currentLbl.textContent="Playing "+String(currentSongIndex).padStart(3, '0');
-        } else {
-            // Optionally loop the playlist or stop
-            currentSongIndex = 0; // Loop to the beginning
-            audioPlayer.src = songs[currentSongIndex].dataset.src;
-            audioPlayer.play();
-            currentLbl.textContent="Playing "+String(currentSongIndex).padStart(3, '0');
-        }
-    });
+        audioPlayer.addEventListener('ended', () => {
+            currentSongIndex++;
+            let currentLbl=document.getElementById("current");
+            if (currentSongIndex < songs.length) {
+                audioPlayer.src = songs[currentSongIndex].dataset.src;
+                audioPlayer.play();
+                currentLbl.textContent="Playing "+String(currentSongIndex).padStart(3, '0');
+            } else {
+                // Optionally loop the playlist or stop
+                currentSongIndex = 0; // Loop to the beginning
+                audioPlayer.src = songs[currentSongIndex].dataset.src;
+                audioPlayer.play();
+                currentLbl.textContent="Playing "+String(currentSongIndex).padStart(3, '0');
+            }
+        });
+    }
     </script>
+ }

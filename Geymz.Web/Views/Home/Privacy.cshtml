@@ -34,87 +34,91 @@
 <input type="file" id="audioFile" accept="audio/*">
 <canvas id="visualizerCanvas"></canvas>
 
-
-<script>
-     window.onload = function() {
+@section Scripts{
+    <script>
         const audioFile = document.getElementById('audioFile');
-        const canvas = document.getElementById('visualizerCanvas');
-        const ctx = canvas.getContext('2d');
+            const canvas = document.getElementById('visualizerCanvas');
+            const ctx = canvas.getContext('2d');
 
-        let audioCtx;
-        let analyser;
-        let source;
-        let audioBuffer;
-
-        // Set canvas dimensions
-        canvas.width = window.innerWidth * 0.8;
-        canvas.height = window.innerHeight * 0.6;
-
-        audioFile.addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if (!file) return;
-
-            const reader = new FileReader();
-            reader.onload = function(event) {
-                const arrayBuffer = event.target.result;
-                if (!audioCtx) {
-                    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                }
-                audioCtx.decodeAudioData(arrayBuffer, function(buffer) {
-                    audioBuffer = buffer;
-                    if (source) {
-                        source.stop();
-                        source.disconnect();
-                    }
-                    source = audioCtx.createBufferSource();
-                    source.buffer = audioBuffer;
-
-                    analyser = audioCtx.createAnalyser();
-                    analyser.fftSize = 256; // Controls the number of frequency bins
-
-                    source.connect(analyser);
-                    analyser.connect(audioCtx.destination); // Connect to speakers
-
-                    source.start(0); // Play immediately
-                    
-                    drawVisualizer();
-                }, function(e) {
-                    console.error("Error decoding audio data", e);
-                });
-            };
-            reader.readAsArrayBuffer(file);
-        });
-
+            let audioCtx;
+            var analyser;
+            let source;
+            let audioBuffer;
         function drawVisualizer() {
-            requestAnimationFrame(drawVisualizer);
+                requestAnimationFrame(drawVisualizer);
 
-            if (!analyser) return;
+                if (!analyser) return;
 
-            const bufferLength = analyser.frequencyBinCount;
-            const dataArray = new Uint8Array(bufferLength);
-            analyser.getByteFrequencyData(dataArray); // Get frequency data
+                const bufferLength = analyser.frequencyBinCount;
+                const dataArray = new Uint8Array(bufferLength);
+                analyser.getByteFrequencyData(dataArray); // Get frequency data
 
-            ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear canvas
-            const barWidth = (canvas.width / bufferLength) * 2.5;
-            let x = 0;
-            
-            for (let i = 0; i < bufferLength; i++) {
-                const barHeight = dataArray[i]; // Scale height for visibility
+                ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear canvas
+                const barWidth = (canvas.width / bufferLength) * 2.5;
+                let x = 0;
 
-               
-                ctx.fillStyle = `rgb(${30+i}, ${canvas.height-barHeight}, ${barHeight + 50})`;
-                ctx.fillRect(x, x<canvas.width/2? x/2:canvas.height-(x/2), barWidth, barHeight);
-                x += barWidth + 1; // Spacing between bars
+                for (let i = 0; i < bufferLength; i++) {
+                    const barHeight = dataArray[i]; // Scale height for visibility
+
+                    if(i%2==0)
+                        ctx.fillStyle = `rgb(${30+i}, ${canvas.height-barHeight}, ${barHeight + 50})`;
+                    else
+                        ctx.fillStyle = `rgb(${60+i}, ${barHeight + 30}, ${canvas.height-barHeight})`;
+                    ctx.fillRect(x, x<canvas.width/2? x/2:canvas.height-(x/2), barWidth, barHeight);
+                    x += barWidth + 1; // Spacing between bars
+                }
+
             }
+         window.onload = function() {
             
-        }
 
-        // Handle window resizing
-        window.addEventListener('resize', () => {
+            // Set canvas dimensions
             canvas.width = window.innerWidth * 0.8;
             canvas.height = window.innerHeight * 0.6;
-        });
-    };
 
-    
-</script>
+            audioFile.addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (!file) return;
+
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    const arrayBuffer = event.target.result;
+                    if (!audioCtx) {
+                        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                    }
+                    audioCtx.decodeAudioData(arrayBuffer, function(buffer) {
+                        audioBuffer = buffer;
+                        if (source) {
+                            source.stop();
+                            source.disconnect();
+                        }
+                        source = audioCtx.createBufferSource();
+                        source.buffer = audioBuffer;
+
+                        analyser = audioCtx.createAnalyser();
+                        analyser.fftSize = 256; // Controls the number of frequency bins
+
+                        source.connect(analyser);
+                        analyser.connect(audioCtx.destination); // Connect to speakers
+
+                        source.start(0); // Play immediately
+
+                        drawVisualizer();
+                    }, function(e) {
+                        console.error("Error decoding audio data", e);
+                    });
+                };
+                reader.readAsArrayBuffer(file);
+            });
+
+            
+            // Handle window resizing
+            window.addEventListener('resize', () => {
+                canvas.width = window.innerWidth * 0.8;
+                canvas.height = window.innerHeight * 0.6;
+            });
+        };
+
+
+    </script>
+}
