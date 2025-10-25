@@ -9,7 +9,9 @@
     }
 
     audio {
-        display: block;
+        position:fixed;
+        left:35%;
+        bottom:1%;
         margin: 0 auto;
         width: 400px;
     }
@@ -98,6 +100,30 @@
             item.textContent=`Play episode ${paddedIndex}`;
             playlist.appendChild(item);
         }
+        let soundFiles=[
+          "https://archive.org/download/mariya-takeuchi-impressions-1994-moon-japan-amcm-4200_202107/Mariya%20Takeuchi%20-%20Impressions%20%281994%2C%20Moon-Japan%29/Mariya%20Takeuchi%20-%2001%20-%20Kenka%20wo%20Yamete.mp3",
+          "https://archive.org/download/mariya-takeuchi-impressions-1994-moon-japan-amcm-4200_202107/Mariya%20Takeuchi%20-%20Impressions%20%281994%2C%20Moon-Japan%29/Mariya%20Takeuchi%20-%2002%20-%20Ashita%20no%20Watashi.mp3",
+          "https://archive.org/download/mariya-takeuchi-impressions-1994-moon-japan-amcm-4200_202107/Mariya%20Takeuchi%20-%20Impressions%20%281994%2C%20Moon-Japan%29/Mariya%20Takeuchi%20-%2003%20-%20Mersey%20Beat%20de%20Utawasete.mp3",
+          "https://archive.org/download/mariya-takeuchi-impressions-1994-moon-japan-amcm-4200_202107/Mariya%20Takeuchi%20-%20Impressions%20%281994%2C%20Moon-Japan%29/Mariya%20Takeuchi%20-%2004%20-%20Forever%20Friends.mp3",
+          "https://archive.org/download/mariya-takeuchi-impressions-1994-moon-japan-amcm-4200_202107/Mariya%20Takeuchi%20-%20Impressions%20%281994%2C%20Moon-Japan%29/Mariya%20Takeuchi%20-%2005%20-%20Koi%20no%20Arashi.mp3",
+          "https://archive.org/download/mariya-takeuchi-impressions-1994-moon-japan-amcm-4200_202107/Mariya%20Takeuchi%20-%20Impressions%20%281994%2C%20Moon-Japan%29/Mariya%20Takeuchi%20-%2006%20-%20Single%20Again.mp3",
+          "https://archive.org/download/mariya-takeuchi-impressions-1994-moon-japan-amcm-4200_202107/Mariya%20Takeuchi%20-%20Impressions%20%281994%2C%20Moon-Japan%29/Mariya%20Takeuchi%20-%2007%20-%20Mou%20Ichido.mp3",
+          "https://archive.org/download/mariya-takeuchi-impressions-1994-moon-japan-amcm-4200_202107/Mariya%20Takeuchi%20-%20Impressions%20%281994%2C%20Moon-Japan%29/Mariya%20Takeuchi%20-%2008%20-%20Manhattan%20Kiss.mp3",
+          "https://archive.org/download/mariya-takeuchi-impressions-1994-moon-japan-amcm-4200_202107/Mariya%20Takeuchi%20-%20Impressions%20%281994%2C%20Moon-Japan%29/Mariya%20Takeuchi%20-%2009%20-%20Genki%20wo%20Dashite.mp3",
+          "https://archive.org/download/mariya-takeuchi-impressions-1994-moon-japan-amcm-4200_202107/Mariya%20Takeuchi%20-%20Impressions%20%281994%2C%20Moon-Japan%29/Mariya%20Takeuchi%20-%2010%20-%20Honki%20de%20Only%20You%20%28Let%27s%20Get%20Married%29.mp3",
+          "https://archive.org/download/mariya-takeuchi-impressions-1994-moon-japan-amcm-4200_202107/Mariya%20Takeuchi%20-%20Impressions%20%281994%2C%20Moon-Japan%29/Mariya%20Takeuchi%20-%2011%20-%20Kokuhaku.mp3",
+          "https://archive.org/download/mariya-takeuchi-impressions-1994-moon-japan-amcm-4200_202107/Mariya%20Takeuchi%20-%20Impressions%20%281994%2C%20Moon-Japan%29/Mariya%20Takeuchi%20-%2012%20-%20Junai%20Rhapsody.mp3",
+          "https://archive.org/download/mariya-takeuchi-impressions-1994-moon-japan-amcm-4200_202107/Mariya%20Takeuchi%20-%20Impressions%20%281994%2C%20Moon-Japan%29/Mariya%20Takeuchi%20-%2013%20-%20Linda.mp3",
+          "https://archive.org/download/mariya-takeuchi-impressions-1994-moon-japan-amcm-4200_202107/Mariya%20Takeuchi%20-%20Impressions%20%281994%2C%20Moon-Japan%29/Mariya%20Takeuchi%20-%2014%20-%20Ie%20ni%20Kaerou%20%28My%20Sweet%20Home%29.mp3",
+          "https://archive.org/download/mariya-takeuchi-impressions-1994-moon-japan-amcm-4200_202107/Mariya%20Takeuchi%20-%20Impressions%20%281994%2C%20Moon-Japan%29/Mariya%20Takeuchi%20-%2015%20-%20Eki.mp3"
+        ];
+            for(let i=0;i<soundFiles.length;i++){
+                let item=document.createElement("li"),src=soundFiles[i];
+                let title=src.substring(188);
+                item.setAttribute("data-src",src);
+                item.textContent=`Play ${title}`;
+                playlist.appendChild(item);
+            }
     }
     
     window.onload = function() {
