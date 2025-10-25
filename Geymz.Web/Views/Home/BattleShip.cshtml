@@ -1,0 +1,112 @@
+﻿@{
+    ViewData["Title"] = "Battle Ship";
+}
+<style>
+    body {
+        font-family: sans-serif;
+        text-align: center;
+        background: #6FC3ED;
+    }
+
+    .grid {
+        display: grid;
+        grid-template-columns: repeat(10, 30px);
+        gap: 2px;
+        margin: 10px 30%;
+    }
+
+    .cell {
+        width: 30px;
+        height: 30px;
+        background-color: #add8e6;
+        border: 1px solid #333;
+        cursor: pointer;
+        border-radius: 5px;
+    }
+
+    .hit {
+        background-color: red;
+    }
+
+    .miss {
+        background-color: gray;
+    }
+
+    .ship {
+        background-color: #333;
+    }
+</style>
+<h2>Battleship: Player <span id="currentPlayer">1</span>'s Turn</h2>
+<div id="player1Grid" class="grid"></div>
+<div id="player2Grid" class="grid" style="display:none;"></div>
+<button onclick="switchTurn()">Switch Turn</button>
+<button onclick="resetGame()">Reset</button>
+@section Scripts {
+    <script>
+        const gridSize = 10;
+        const shipCount = 5;
+        let currentPlayer = 1;
+        let player1Ships = [];
+        let player2Ships = [];
+
+        function createGrid(playerGrid, ships) {
+          playerGrid.innerHTML = '';
+          for (let i = 0; i < gridSize * gridSize; i++) {
+            const cell = document.createElement('div');
+            cell.classList.add('cell');
+            cell.dataset.index = i;
+            cell.addEventListener('click', () => handleFire(cell, ships));
+            playerGrid.appendChild(cell);
+          }
+        }
+
+        function placeShipsRandomly() {
+          const positions = new Set();
+          while (positions.size < shipCount) {
+            positions.add(Math.floor(Math.random() * gridSize * gridSize));
+          }
+          return Array.from(positions);
+        }
+
+        function handleFire(cell, ships) {
+          const index = parseInt(cell.dataset.index);
+          if (cell.classList.contains('hit') || cell.classList.contains('miss')) return;
+
+          if (ships.includes(index)) {
+            cell.classList.add('hit');
+            ships.splice(ships.indexOf(index), 1);
+            if (ships.length === 0) {
+              alert(`Player ${currentPlayer} wins!`);
+              resetGame();
+            }
+          } else {
+            cell.classList.add('miss');
+          }
+        }
+
+        function switchTurn() {
+          currentPlayer = currentPlayer === 1 ? 2 : 1;
+          document.getElementById('currentPlayer').textContent = currentPlayer;
+          document.getElementById('player1Grid').style.display = currentPlayer === 1 ? 'grid' : 'none';
+          document.getElementById('player2Grid').style.display = currentPlayer === 2 ? 'grid' : 'none';
+        }
+        function resetGame() {
+          currentPlayer = 1;
+          document.getElementById('currentPlayer').textContent = currentPlayer;
+          document.getElementById('player1Grid').style.display = 'grid';
+          document.getElementById('player2Grid').style.display = 'none';
+
+          player1Ships = placeShipsRandomly();
+          player2Ships = placeShipsRandomly();
+
+          createGrid(document.getElementById('player1Grid'), player2Ships);
+          createGrid(document.getElementById('player2Grid'), player1Ships);
+        }
+
+        // Initialize game
+        player1Ships = placeShipsRandomly();
+        player2Ships = placeShipsRandomly();
+        createGrid(document.getElementById('player1Grid'), player2Ships);
+        createGrid(document.getElementById('player2Grid'), player1Ships);
+    </script>
+}
