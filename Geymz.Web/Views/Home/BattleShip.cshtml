@@ -5,7 +5,7 @@
     body {
         font-family: sans-serif;
         text-align: center;
-        background: #6FC3ED;
+        background: #9fdafa;
     }
 
     .grid {
@@ -13,13 +13,14 @@
         grid-template-columns: repeat(10, 30px);
         gap: 2px;
         margin: 10px 30%;
+        transition: max-height 0.5s ease, opacity 0.5s ease;
     }
 
     .cell {
         width: 30px;
         height: 30px;
         background-color: #add8e6;
-        border: 1px solid #333;
+        border: 1px solid #2f2d2d;
         cursor: pointer;
         border-radius: 5px;
     }
@@ -38,7 +39,7 @@
 </style>
 <h2>Battleship: Player <span id="currentPlayer">1</span>'s Turn</h2>
 <div id="player1Grid" class="grid"></div>
-<div id="player2Grid" class="grid" style="display:none;"></div>
+<div id="player2Grid" class="grid" ></div>
 <button onclick="switchTurn()">Switch Turn</button>
 <button onclick="resetGame()">Reset</button>
 @section Scripts {
@@ -79,7 +80,8 @@
               alert(`Player ${currentPlayer} wins!`);
               resetGame();
             }
-          } else {
+          } 
+          else {
             cell.classList.add('miss');
           }
         }
@@ -89,6 +91,8 @@
           document.getElementById('currentPlayer').textContent = currentPlayer;
           document.getElementById('player1Grid').style.display = currentPlayer === 1 ? 'grid' : 'none';
           document.getElementById('player2Grid').style.display = currentPlayer === 2 ? 'grid' : 'none';
+          document.getElementById('player1Grid').style.opacity = currentPlayer === 1 ? '100%' : '0%';
+          document.getElementById('player2Grid').style.opacity = currentPlayer === 2 ? '100%' : '0%';
         }
         function resetGame() {
           currentPlayer = 1;
@@ -103,10 +107,6 @@
           createGrid(document.getElementById('player2Grid'), player1Ships);
         }
 
-        // Initialize game
-        player1Ships = placeShipsRandomly();
-        player2Ships = placeShipsRandomly();
-        createGrid(document.getElementById('player1Grid'), player2Ships);
-        createGrid(document.getElementById('player2Grid'), player1Ships);
+        resetGame();
     </script>
 }
