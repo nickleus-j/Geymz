@@ -211,7 +211,7 @@
 
                 function unshiftAndCut(arr) {
                     var result = arr.slice();
-                    return result.map(function (el, i) {
+                    return result.map(function (i) {
                         if (!i)
                             return arr[0];
                         return arr[i - 1];
