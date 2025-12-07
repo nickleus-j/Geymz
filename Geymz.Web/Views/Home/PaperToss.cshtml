@@ -1,0 +1,356 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    ViewBag.Title = "Paper Toss";
+}
+<style>
+    body {
+        margin: 0;
+        background: #f2f2f2;
+        font-family: system-ui, sans-serif;
+    }
+
+    #ui {
+        position: fixed;
+        top: 10px;
+        left: 10px;
+        background: rgba(255,255,255,0.9);
+        padding: 8px 12px;
+        border-radius: 8px;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+        display: flex;
+        gap: 16px;
+        align-items: center;
+        z-index: 10;
+    }
+
+    div.container{
+        margin:0;
+        padding:0;
+    }
+    .label {
+        font-weight: 600;
+    }
+
+    #canvas {
+        display: block;
+        width: 100vw;
+        height: 100vh;
+        background: #3a3a33;
+    }
+
+    #hint {
+        position: fixed;
+        bottom: 10px;
+        left: 10px;
+        color: #444;
+        font-size: 14px;
+        background: rgba(255,255,255,0.8);
+        padding: 6px 10px;
+        border-radius: 6px;
+    }
+</style>
+<div id="ui">
+    <div><span class="label">Tries:</span> <span id="tries">0</span></div>
+    <div><span class="label">In basket:</span> <span id="score">0</span></div>
+    <button id="resetAll">Reset game</button>
+</div>
+<div id="hint">Drag the paper and release to flick it into the basket.</div>
+<canvas id="canvas"></canvas>
+@section scripts {
+    <script>
+        // Canvas setup
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        function resize() {
+          canvas.width = window.innerWidth;
+          canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resize);
+        resize();
+
+        // UI elements
+        const triesEl = document.getElementById('tries');
+        const scoreEl = document.getElementById('score');
+        const resetAllBtn = document.getElementById('resetAll');
+
+        // Game state
+        let tries = 0;
+        let score = 0;
+
+        const gravity = 0.45;       // downward acceleration
+        const friction = 0.995;     // air resistance
+        const groundBounce = 0.35;  // bounce energy on ground hit
+
+        // Paper (ball) properties
+        const paper = {
+          r: 16,
+          x: canvas.width/4,
+          y: canvas.height - 120,
+          vx: 0,
+          vy: 0,
+          dragging: false,
+          launched: false,
+          trail: []
+        };
+
+        // Basket properties (simple rim + backboard)
+        const basket = {
+          w: 80,
+          h: 12,
+          x: canvas.width - 200,
+          y: canvas.height - 220,
+          rimThickness: 6,
+          enterZone: { // target zone inside the rim
+            x: 0, y: 0, w: 0, h: 0
+          },
+          board: { x: 0, y: 0, w: 10, h: 60 }
+        };
+
+        function placeBasket() {
+          basket.x = canvas.width - 200;
+          basket.y = canvas.height - 220;
+          basket.enterZone.x = basket.x + 8;
+          basket.enterZone.y = basket.y - 24;
+          basket.enterZone.w = basket.w - 16;
+          basket.enterZone.h = 24;
+          basket.board.x = basket.x + basket.w + 6;
+          basket.board.y = basket.y - 60;
+          basket.board.w = 10;
+          basket.board.h = 90;
+        }
+        placeBasket();
+
+        // Input handling (mouse + touch)
+        function pointerPos(e) {
+          const rect = canvas.getBoundingClientRect();
+          if (e.touches && e.touches[0]) {
+            return {
+              x: e.touches[0].clientX - rect.left,
+              y: e.touches[0].clientY - rect.top
+            };
+          } else {
+            return {
+              x: e.clientX - rect.left,
+              y: e.clientY - rect.top
+            };
+          }
+        }
+
+        function startDrag(e) {
+          const pos = pointerPos(e);
+          const dx = pos.x - paper.x;
+          const dy = pos.y - paper.y;
+          if (Math.hypot(dx, dy) <= paper.r + 10 && !paper.launched) {
+            paper.dragging = true;
+            paper.trail = [];
+          }
+        }
+
+        function moveDrag(e) {
+          if (!paper.dragging || paper.launched) return;
+          const pos = pointerPos(e);
+          paper.x = pos.x;
+          paper.y = pos.y;
+        }
+
+        function endDrag(e) {
+          if (!paper.dragging || paper.launched) return;
+          const pos = pointerPos(e);
+          // Launch: velocity opposite to drag from starting point
+          const startX = canvas.width/4, startY = canvas.height - 120;
+          const dx = startX - pos.x;
+          const dy = startY - pos.y;
+
+          // Scale power with clamp
+          const powerScale = 0.08;
+          paper.vx = dx * powerScale;
+          paper.vy = dy * powerScale;
+
+          paper.dragging = false;
+          paper.launched = true;
+          tries++;
+          triesEl.textContent = String(tries);
+        }
+
+        canvas.addEventListener('mousedown', startDrag);
+        canvas.addEventListener('mousemove', moveDrag);
+        canvas.addEventListener('mouseup', endDrag);
+        canvas.addEventListener('mouseleave', endDrag);
+
+        canvas.addEventListener('touchstart', startDrag, { passive: true });
+        canvas.addEventListener('touchmove', moveDrag, { passive: true });
+        canvas.addEventListener('touchend', endDrag);
+        canvas.addEventListener('touchcancel', endDrag);
+
+        // Physics update
+        function update() {
+          if (paper.launched) {
+            paper.vy += gravity;
+            paper.vx *= friction;
+            paper.vy *= friction;
+
+            paper.x += paper.vx;
+            paper.y += paper.vy;
+
+            // Trail for visual
+            paper.trail.push({ x: paper.x, y: paper.y });
+            if (paper.trail.length > 40) paper.trail.shift();
+
+            // Collide with ground
+            if (paper.y + paper.r > canvas.height - 10) {
+              paper.y = canvas.height - 10 - paper.r;
+              paper.vy = -Math.abs(paper.vy) * groundBounce;
+              paper.vx *= 0.95;
+              // Stop if very slow
+              if (Math.hypot(paper.vx, paper.vy) < 0.4) {
+                resetShot();
+              }
+            }
+
+            // Collide with backboard (simple vertical wall)
+            if (
+              paper.x + paper.r > basket.board.x &&
+              paper.x - paper.r < basket.board.x + basket.board.w &&
+              paper.y + paper.r > basket.board.y &&
+              paper.y - paper.r < basket.board.y + basket.board.h
+            ) {
+              paper.x = basket.board.x - paper.r;
+              paper.vx = -Math.abs(paper.vx) * 0.5;
+            }
+
+            // Check score: center enters the rim zone while descending
+            if (
+              paper.vy > 0 && // descending
+              paper.x > basket.enterZone.x &&
+              paper.x < basket.enterZone.x + basket.enterZone.w &&
+              paper.y > basket.enterZone.y &&
+              paper.y < basket.enterZone.y + basket.enterZone.h
+            ) {
+              score++;
+              scoreEl.textContent = String(score);
+              // soften speed to mimic net catch
+              paper.vx *= 0.6;
+              paper.vy *= 0.6;
+            }
+
+            // Out of bounds reset
+            if (
+              paper.x < -100 || paper.x > canvas.width + 100 ||
+              paper.y < -200
+            ) {
+              resetShot();
+            }
+          }
+        }
+        var startingX=canvas.width/4;
+        function resetShot() {
+          paper.launched = false;
+          paper.dragging = false;
+          paper.vx = 0;
+          paper.vy = 0;
+          paper.x = startingX;
+          paper.y = canvas.height - 120;
+          paper.trail = [];
+        }
+
+        resetAllBtn.addEventListener('click', () => {
+          tries = 0; score = 0;
+          triesEl.textContent = String(tries);
+          scoreEl.textContent = String(score);
+          resetShot();
+        });
+
+        // Draw
+        function drawCourt() {
+          // floor line
+          ctx.fillStyle = '#ddd';
+          ctx.fillRect(0, canvas.height - 10, canvas.width, 10);
+
+          // basket stand
+          ctx.fillStyle = '#666';
+          ctx.fillRect(basket.x - 8, basket.y - 120, 16, 120);
+
+          // rim
+          ctx.fillStyle = '#e74c3c';
+          ctx.fillRect(basket.x, basket.y - basket.h, basket.w, basket.h);
+
+          // net hint (enter zone)
+          ctx.fillStyle = 'rgba(231, 76, 60, 0.15)';
+          ctx.fillRect(
+            basket.enterZone.x,
+            basket.enterZone.y,
+            basket.enterZone.w,
+            basket.enterZone.h
+          );
+
+          // backboard
+          ctx.fillStyle = '#bbb';
+          ctx.fillRect(
+            basket.board.x,
+            basket.board.y,
+            basket.board.w,
+            basket.board.h
+          );
+
+          // start marker
+          ctx.fillStyle = '#4a90e2';
+          ctx.beginPath();
+          ctx.arc(startingX, canvas.height - 120, 6, 0, Math.PI * 2);
+          ctx.fill();
+        }
+
+        function drawPaper() {
+          // trail
+          ctx.strokeStyle = 'rgba(74,144,226,0.4)';
+          ctx.lineWidth = 2;
+          ctx.beginPath();
+          for (let i = 0; i < paper.trail.length; i++) {
+            const p = paper.trail[i];
+            if (i === 0) ctx.moveTo(p.x, p.y);
+            else ctx.lineTo(p.x, p.y);
+          }
+          ctx.stroke();
+
+          // paper ball
+          ctx.fillStyle = '#ffffff';
+          ctx.beginPath();
+          ctx.arc(paper.x, paper.y, paper.r, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.strokeStyle = '#999';
+          ctx.lineWidth = 3;
+          ctx.stroke();
+
+          // drag guide
+          if (paper.dragging && !paper.launched) {
+            ctx.strokeStyle = '#4a90e2';
+            ctx.setLineDash([6, 6]);
+            ctx.beginPath();
+            ctx.moveTo(paper.x, paper.y);
+            ctx.lineTo(startingX, canvas.height - 120);
+            ctx.stroke();
+            ctx.setLineDash([]);
+          }
+        }
+
+        function loop() {
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+          drawCourt();
+          drawPaper();
+          update();
+          requestAnimationFrame(loop);
+        }
+        loop();
+
+        // Keep basket aligned on resize
+        window.addEventListener('resize', () => {
+          placeBasket();
+          // adjust start point relative to floor
+          if (!paper.launched && !paper.dragging) {
+            paper.x = startingX;
+            paper.y = canvas.height - 120;
+          }
+        });
+    </script>
+}
