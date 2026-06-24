@@ -2,8 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 
-namespace Geymz.Web.Controllers
-{
+namespace Geymz.Web.Controllers ;
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
@@ -83,4 +82,3 @@ namespace Geymz.Web.Controllers
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
     }
-}
