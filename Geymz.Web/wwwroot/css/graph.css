@@ -127,11 +127,10 @@ pre span.key {
     font-size:1.2em;
 }
 #controls {
-    border: dashed 3px #9999BB;
-    border-left:none;
-    border-right:none;
+    border: none;
+    background: #e6e6e6;
     margin-bottom: 25px;
-    padding:5px 0;
+    padding:5px 10px;
     width:650px;
 }
 #search_grid  {
@@ -171,7 +170,11 @@ pre span.key {
 #weightsKey {
     display: none;
 }
-
+#weightsKey span{
+    width: 14.25px;
+    height: 14.25px;
+    margin-right: 6px;
+}
 .btn {
     display: inline-block;
     padding: 4px 10px 4px;
@@ -618,12 +621,6 @@ h2 {
 #content {
     margin: 0 auto;
 }
-
-#controls {
-    border: none;
-    background: #e6e6e6;
-}
-
 
 .grid_item {
     transition: background 0.2s ease;

@@ -39,16 +39,34 @@
 </div>
 @section Scripts{
 	<script>
+                
                 const morseCodeMap = {
-          'A': '.-', 'B': '-...', 'C': '-.-.', 'D': '-..', 'E': '.', 'F': '..-.',
-          'G': '--.', 'H': '....', 'I': '..', 'J': '.---', 'K': '-.-', 'L': '.-..',
-          'M': '--', 'N': '-.', 'O': '---', 'P': '.--.', 'Q': '--.-', 'R': '.-.',
-          'S': '...', 'T': '-', 'U': '..-', 'V': '...-', 'W': '.--', 'X': '-..-',
-          'Y': '-.--', 'Z': '--..', '0': '-----', '1': '.----', '2': '..---',
-          '3': '...--', '4': '....-', '5': '.....', '6': '-....', '7': '--...',
-          '8': '---..', '9': '----.', ' ': '/'
-        };
-         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                    // Letters
+                    'A': '.-',     'B': '-...',   'C': '-.-.',   'D': '-..',    'E': '.',
+                    'F': '..-.',   'G': '--.',    'H': '....',   'I': '..',     'J': '.---',
+                    'K': '-.-',    'L': '.-..',   'M': '--',     'N': '-.',     'O': '---',
+                    'P': '.--.',   'Q': '--.-',   'R': '.-.',    'S': '...',    'T': '-',
+                    'U': '..-',    'V': '...-',   'W': '.--',    'X': '-..-',   'Y': '-.--',
+                    'Z': '--..',
+
+                    // Numbers
+                    '0': '-----',  '1': '.----',  '2': '..---',  '3': '...--',  '4': '....-',
+                    '5': '.....',  '6': '-....',  '7': '--...',  '8': '---..',  '9': '----.',
+
+                    // Punctuation & Symbols
+                    '.': '.-.-.-', ',': '--..--', '?': '..--..', "'": '.----.', '!': '-.-.--',
+                    '/': '-..-.',  '(': '-.--.',  ')': '-.--.-', '&': '.-...',  ':': '---...',
+                    ';': '-.-.-.', '=': '-...-',  '+': '.-.-.',  '-': '-....-', '_': '..--.-',
+                    '"': '.-..-.', '$': '...-..-',
+
+                    // Extended / Accented Characters (International Morse)
+                    'Ä': '.-.-',   'Á': '  .--.-', 'Å': '  .--.-', 'É': '..-..',  'Ñ': '--.--',
+                    'Ö': '---.',   'Ü': '..--',   'CH': '----',
+
+                    // Word Separator
+                    ' ': ' '
+                };
+                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         document.getElementById("toMorseBox").addEventListener("keyup", function(event) {
             event.preventDefault();
             if (event.keyCode === 13) {
@@ -73,12 +91,12 @@
             oscillator.connect(gainNode);
             gainNode.connect(audioCtx.destination);
 
-            oscillator.frequency.value = frequency; // Set frequency (e.g., 600Hz)
+            oscillator.frequency.value = frequency; 
             gainNode.gain.value = 1; // Start at full volume
 
             oscillator.start(audioCtx.currentTime);
             gainNode.gain.exponentialRampToValueAtTime(0.00001, audioCtx.currentTime + duration); // Fade out
-            oscillator.stop(audioCtx.currentTime + duration + 0.1); // Stop after fade
+            oscillator.stop(audioCtx.currentTime + duration + 0.1); 
         }
         async function playMorseCode(morseString) {
             const dotDuration = 0.1; // seconds
@@ -94,9 +112,9 @@
                 } else if (char === '-') {
                     playSound(dashDuration);
                     await new Promise(resolve => setTimeout(resolve, elementPause * 1000));
-                } else if (char === ' ') { // Space between characters
+                } else if (char === ' ') { 
                     await new Promise(resolve => setTimeout(resolve, charPause * 500));
-                } else if (char === '/') { // Convention for word separation
+                } else if (char === '/') { 
                     await new Promise(resolve => setTimeout(resolve, wordPause * 1000));
                 }
             }

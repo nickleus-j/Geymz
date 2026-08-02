@@ -76,9 +76,9 @@ BinaryHeap.prototype = {
     },
     pop: function() {
         // Store the first element so we can return it later.
-        var result = this.content[0];
+        let result = this.content[0];
         // Get the element at the end of the array.
-        var end = this.content.pop();
+        let end = this.content.pop();
         // If there are any elements left, put the end element at the
         // start, and let it bubble up.
         if (this.content.length > 0) {
@@ -88,11 +88,11 @@ BinaryHeap.prototype = {
         return result;
     },
     remove: function(node) {
-        var i = this.content.indexOf(node);
+        let i = this.content.indexOf(node);
 
         // When it is found, the process seen in 'pop' is repeated
         // to fill up the hole.
-        var end = this.content.pop();
+        let end = this.content.pop();
 
         if (i !== this.content.length - 1) {
             this.content[i] = end;
@@ -137,7 +137,7 @@ BinaryHeap.prototype = {
     },
     bubbleUp: function(n) {
         // Look up the target element and its score.
-        var length = this.content.length,
+        let length = this.content.length,
             element = this.content[n],
             elemScore = this.scoreFunction(element);
 
@@ -160,7 +160,7 @@ BinaryHeap.prototype = {
 
             // Do the same checks for the other child.
             if (child2N < length) {
-                var child2 = this.content[child2N],
+                let child2 = this.content[child2N],
                     child2Score = this.scoreFunction(child2);
                 if (child2Score < (swap === null ? elemScore : child1Score)) {
                     swap = child2N;
